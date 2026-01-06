@@ -1,0 +1,42 @@
+################################
+# GLOBAL
+################################
+.env
+*.log
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+################################
+# FRONTEND (React + Vite)
+################################
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+frontend/.env.development
+
+################################
+# SMART CONTRACTS (Foundry)
+################################
+smart contracts/out/
+smart contracts/cache/
+
+# Broadcast logs
+smart contracts/broadcast/
+!smart contracts/broadcast
+smart contracts/broadcast/*/31337/
+smart contracts/broadcast/**/dry-run/
+
+# Optional (recommended for OSS)
+# smart contracts/lib/
+
+################################
+# COVERAGE
+################################
+coverage/
+lcov.info
