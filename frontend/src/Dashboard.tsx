@@ -2,6 +2,7 @@ import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
 
 function Dashboard() {
+    
     return (
         <div className="min-h-screen bg-linear-to-b flex flex-col justify-between from-gray-900 via-gray-800 to-gray-900">
             <Navbar />

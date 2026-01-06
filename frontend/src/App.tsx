@@ -6,11 +6,6 @@ import Dashboard from './Dashboard'
 import './App.css'
 
 function App() {
-  if (!window.ethereum?.isMetaMask) {
-  alert("MetaMask not detected")
-  return
-}
-
   return (
     <Dashboard/>
   )

@@ -11,7 +11,7 @@ export default function Navbar() {
           <span className="text-xl font-bold text-white">TokenForge</span>
         </div>
         <div className="flex items-center gap-4">
-          <ConnectButton  />
+          <ConnectButton showBalance={true} />
         </div>
       </div>
     </nav>
