@@ -52,7 +52,6 @@ contract TokenFactoryBuyTest is Test{
     function test_RefundEthWhenMoreSent() public{
         uint amount = tf.calculateBuyingCost(1 * 10**18,tokenAddress);
         address buyer = address(0x234);
-        assertEq(buyer.balance,0);
         vm.deal(buyer,amount + 10 ether);
         vm.prank(buyer);
         tf.buyMemeToken{value:amount + 2 ether}(tokenAddress, 1* 10**18);

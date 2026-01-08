@@ -40,3 +40,7 @@ smart contracts/broadcast/**/dry-run/
 ################################
 coverage/
 lcov.info
+
+
+web2 backend/node_modules/
+web2 backend/dist/

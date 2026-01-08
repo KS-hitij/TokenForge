@@ -33,8 +33,8 @@ contract TokenFactory is ReentrancyGuard, Ownable{
     uint constant K=6000000 * 10**36;
     uint24 constant FEE = 3000;
     int24 constant TICK_SPACING = 60;
-    address constant PERMIT2 = 0x000000000022D473030F116dDEE9F6B43aC78BA3;
-    address payable constant POSITION_MANAGER = payable(0x03281eB31B5eeBce553b679E19c0A3A1142BdA07);
+    address constant PERMIT2 = 	0x000000000022D473030F116dDEE9F6B43aC78BA3;
+    address payable constant POSITION_MANAGER = payable(0x429ba70129df741B2Ca2a85BC3A2a3328e5c09b4);
     address constant WETH = 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9;
 
     mapping(address => memeToken) addressToMemeToken;
@@ -156,7 +156,6 @@ contract TokenFactory is ReentrancyGuard, Ownable{
             currency0 = WETH;
             currency1 = tokenAddress;
         }
-
         PoolKey memory pool = PoolKey({
             currency0: Currency.wrap(currency0),
             currency1: Currency.wrap(currency1),
@@ -164,9 +163,7 @@ contract TokenFactory is ReentrancyGuard, Ownable{
             tickSpacing: TICK_SPACING,
             hooks: IHooks(address(0))
         });
-
         uint160 startingPrice = calculateStartingPrice(ethAmount,listedToken.tokenReserve);
-
         bytes[] memory params = new bytes[](2);
 
         params[0] = abi.encodeWithSelector(
@@ -178,7 +175,6 @@ contract TokenFactory is ReentrancyGuard, Ownable{
             uint8(Actions.MINT_POSITION),
             uint8(Actions.SETTLE_PAIR)
         );
-
         bytes[] memory mintParams = new bytes[](2);
         mintParams[0] = abi.encode(
             pool,
@@ -197,16 +193,15 @@ contract TokenFactory is ReentrancyGuard, Ownable{
             abi.encode(actions, mintParams),
             deadline
         );
-
         IERC20(tokenAddress).approve(PERMIT2, type(uint256).max);
         IAllowanceTransfer(PERMIT2).approve(
             tokenAddress,
             POSITION_MANAGER,
             type(uint160).max,
-            type(uint48).max
+            uint48(block.timestamp + 3600)
         );
-
         PositionManager(POSITION_MANAGER).multicall{value: ethAmount}(params);
+
         Token(tokenAddress).renounceOwnership();
         emit TokenGraduated(listedToken.tokenAddress);
     }
@@ -236,9 +231,6 @@ contract TokenFactory is ReentrancyGuard, Ownable{
     function getTokenDetails(address _address) public view returns (memeToken memory){
         if(addressToMemeToken[_address].tokenAddress == address(0)){
             revert TOKEN_NOT_LISTED();
-        }
-        if(addressToMemeToken[_address].hasGraduated == true){
-            revert TOKEN_GRAUDATED();
         }
         return addressToMemeToken[_address];
     }
