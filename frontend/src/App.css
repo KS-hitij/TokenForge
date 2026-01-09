@@ -1,2 +1,8 @@
 /* App specific styles - most styles are handled by Tailwind CSS */
 
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}

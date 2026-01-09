@@ -1,14 +1,32 @@
+import { useState} from "react"
+import { useReadContract } from "wagmi"
+import TokenCard from "./components/TokenCard"
+import { contractABI, contractAddress } from "./lib/contract"
+
+
 function Dashboard() {
+    const [offset, setOffset] = useState(0)
+    const tokenAddresses = useReadContract({
+        address: contractAddress as `0x${string}`,
+        abi: contractABI,
+        functionName:"getTokensAddress",
+        args:[offset]
+    })
+    const ZERO_ADDRESS="0x0000000000000000000000000000000000000000"
 
     return (
         <>
-            <div className="container px-4 pt-40 pb-20 h-full">
+            <div className="px-4 pt-40 pb-20 h-full">
                 <h1 className="text-white text-center font-bold text-2xl ">Tokens You Can Trade</h1>
                 <div className="mt-10">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div className="h-50 w-50 border-2 border-gray-400">
-                            <img src="https://gateway.pinata.cloud/ipfs/bafkreififws4gdvcccs6vgamsaz6jarkewfmggdewxk63adee6hi73ngcy" alt="" />
-                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-10">
+                    {tokenAddresses.data && tokenAddresses.data.length > 0 ? (
+                        tokenAddresses.data.filter((tokenAddress: string) => tokenAddress !== ZERO_ADDRESS).map((tokenAddress: string, index: number) => (
+                            <TokenCard key={index} address={tokenAddress} />
+                        ))
+                    ) : (
+                        <p className="text-white text-center col-span-full">No tokens available for trading.</p>
+                    )}
                     </div>
                 </div>
             </div>

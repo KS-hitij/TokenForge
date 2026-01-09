@@ -1,0 +1,406 @@
+{
+        "abi": [
+            {
+                "type": "constructor",
+                "inputs": [],
+                "stateMutability": "nonpayable"
+            },
+            {
+                "type": "function",
+                "name": "buyMemeToken",
+                "inputs": [
+                    {
+                        "name": "_address",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "purchaseQty",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
+                "name": "calculateBuyingCost",
+                "inputs": [
+                    {
+                        "name": "purchaseQty",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "listedTokenAddress",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "calculateSellingPrice",
+                "inputs": [
+                    {
+                        "name": "sellQty",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "listedTokenAddress",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "collectFees",
+                "inputs": [],
+                "outputs": [],
+                "stateMutability": "nonpayable"
+            },
+            {
+                "type": "function",
+                "name": "createMemeToken",
+                "inputs": [
+                    {
+                        "name": "_name",
+                        "type": "string",
+                        "internalType": "string"
+                    },
+                    {
+                        "name": "_symbol",
+                        "type": "string",
+                        "internalType": "string"
+                    },
+                    {
+                        "name": "_tokenMetaData",
+                        "type": "string",
+                        "internalType": "string"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
+                "name": "getTokenDetails",
+                "inputs": [
+                    {
+                        "name": "_address",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "tuple",
+                        "internalType": "struct TokenFactory.memeToken",
+                        "components": [
+                            {
+                                "name": "name",
+                                "type": "string",
+                                "internalType": "string"
+                            },
+                            {
+                                "name": "symbol",
+                                "type": "string",
+                                "internalType": "string"
+                            },
+                            {
+                                "name": "metaDataURI",
+                                "type": "string",
+                                "internalType": "string"
+                            },
+                            {
+                                "name": "tokenAddress",
+                                "type": "address",
+                                "internalType": "address"
+                            },
+                            {
+                                "name": "creatorAddress",
+                                "type": "address",
+                                "internalType": "address"
+                            },
+                            {
+                                "name": "tokenReserve",
+                                "type": "uint256",
+                                "internalType": "uint256"
+                            },
+                            {
+                                "name": "ethReserve",
+                                "type": "uint256",
+                                "internalType": "uint256"
+                            },
+                            {
+                                "name": "hasGraduated",
+                                "type": "bool",
+                                "internalType": "bool"
+                            }
+                        ]
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "getTokensAddress",
+                "inputs": [
+                    {
+                        "name": "offset",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "address[]",
+                        "internalType": "address[]"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "graduate",
+                "inputs": [
+                    {
+                        "name": "_listedTokenAddress",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "nonpayable"
+            },
+            {
+                "type": "function",
+                "name": "owner",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "renounceOwnership",
+                "inputs": [],
+                "outputs": [],
+                "stateMutability": "nonpayable"
+            },
+            {
+                "type": "function",
+                "name": "sellMemeToken",
+                "inputs": [
+                    {
+                        "name": "_address",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "sellQty",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "nonpayable"
+            },
+            {
+                "type": "function",
+                "name": "transferOwnership",
+                "inputs": [
+                    {
+                        "name": "newOwner",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "nonpayable"
+            },
+            {
+                "type": "event",
+                "name": "OwnershipTransferred",
+                "inputs": [
+                    {
+                        "name": "previousOwner",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "newOwner",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    }
+                ],
+                "anonymous": false
+            },
+            {
+                "type": "event",
+                "name": "TokenBought",
+                "inputs": [
+                    {
+                        "name": "tokenAddress",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "amount",
+                        "type": "uint256",
+                        "indexed": false,
+                        "internalType": "uint256"
+                    }
+                ],
+                "anonymous": false
+            },
+            {
+                "type": "event",
+                "name": "TokenCreated",
+                "inputs": [
+                    {
+                        "name": "tokenAddress",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    }
+                ],
+                "anonymous": false
+            },
+            {
+                "type": "event",
+                "name": "TokenGraduated",
+                "inputs": [
+                    {
+                        "name": "tokenAddress",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    }
+                ],
+                "anonymous": false
+            },
+            {
+                "type": "event",
+                "name": "TokenSold",
+                "inputs": [
+                    {
+                        "name": "tokenAddress",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "amount",
+                        "type": "uint256",
+                        "indexed": false,
+                        "internalType": "uint256"
+                    }
+                ],
+                "anonymous": false
+            },
+            {
+                "type": "error",
+                "name": "INCORRECT_ETH_AMOUNT",
+                "inputs": [
+                    {
+                        "name": "sent",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "required",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ]
+            },
+            {
+                "type": "error",
+                "name": "INSUFFICIENT_TOKENS",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "INVALID_TOKEN_FEE",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "NOT_CREATOR",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "OFFSET_TOO_HIGH",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "OwnableInvalidOwner",
+                "inputs": [
+                    {
+                        "name": "owner",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ]
+            },
+            {
+                "type": "error",
+                "name": "OwnableUnauthorizedAccount",
+                "inputs": [
+                    {
+                        "name": "account",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ]
+            },
+            {
+                "type": "error",
+                "name": "ReentrancyGuardReentrantCall",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "TOKEN_GRAUDATED",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "TOKEN_NOT_LISTED",
+                "inputs": []
+            }
+        ],
+        "contractAddress": "0x6903e1293d640a6e884ece64d28e524b780fb4c3"
+}

@@ -2,10 +2,16 @@ import express from "express";
 import dotenv from "dotenv";
 import multer from "multer";
 import { Blob,File } from "node:buffer";
+import cors from "cors";
+
 
 import { PinataSDK } from "pinata";
 dotenv.config();
 const app = express();
+app.use(cors({
+    origin:"http://localhost:5173",
+}))
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 const pinata = new PinataSDK({

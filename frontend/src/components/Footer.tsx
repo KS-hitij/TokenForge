@@ -8,7 +8,7 @@ export default function Footer() {
           </div>
           <span className="text-gray-400 text-sm">TokenForge</span>
         </div>
-        <p className="text-gray-500 text-sm">© 2024 TokenForge</p>
+        <p className="text-gray-500 text-sm">© 2026 TokenForge</p>
       </div>
     </footer>
   )
