@@ -36,7 +36,7 @@ export default function Create() {
                 address:contractAddress as `0x${string}`,
                 abi:contractABI,
                 functionName:"createMemeToken",
-                args:[name,symbol,response.data.cid],
+                args:[name,symbol,response.data],
                 value:parseEther("0.001"),
             })
             await publicClient?.waitForTransactionReceipt({ hash: tx });

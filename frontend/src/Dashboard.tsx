@@ -19,7 +19,7 @@ function Dashboard() {
             <div className="px-4 pt-40 pb-20 h-full">
                 <h1 className="text-white text-center font-bold text-2xl ">Tokens You Can Trade</h1>
                 <div className="mt-10">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-10">
+                    <div className="flex flex-wrap justify-center gap-8 px-10 w-full">
                     {tokenAddresses.data && tokenAddresses.data.length > 0 ? (
                         tokenAddresses.data.filter((tokenAddress: string) => tokenAddress !== ZERO_ADDRESS).map((tokenAddress: string, index: number) => (
                             <TokenCard key={index} address={tokenAddress} />
