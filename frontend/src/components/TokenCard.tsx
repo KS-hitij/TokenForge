@@ -8,6 +8,7 @@ export default function TokenCard({address}: {address: string}) {
         functionName:"getTokenDetails",
         args:[address]
     })
+    
     return (
         <div className="bg-gray-800 rounded-lg p-6 flex flex-col items-center cursor-pointer hover:shadow-lg hover:shadow-500/50 transition-shadow">
             <h2 className="text-white font-bold text-xl mb-4">Token Name: {tokenData.data ? tokenData.data.name : "Loading..."}</h2>

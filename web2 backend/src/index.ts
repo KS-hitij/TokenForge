@@ -1,7 +1,7 @@
-import express from "express";
+import express, { response } from "express";
 import dotenv from "dotenv";
 import multer from "multer";
-import { Blob,File } from "node:buffer";
+import { Blob, File } from "node:buffer";
 import cors from "cors";
 
 
@@ -9,7 +9,7 @@ import { PinataSDK } from "pinata";
 dotenv.config();
 const app = express();
 app.use(cors({
-    origin:"http://localhost:5173",
+    origin: "http://localhost:5173",
 }))
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -19,18 +19,18 @@ const pinata = new PinataSDK({
     pinataJwt: process.env.PINATA_JWT || "",
 });
 const upload = multer({
-    limits: { fileSize: 5 * 1024 * 1024 }, 
+    limits: { fileSize: 5 * 1024 * 1024 },
     storage: multer.memoryStorage(),
 });
 
-app.post("/upload", upload.single("file"), async(req, res) => {
+app.post("/upload", upload.single("file"), async (req, res) => {
     if (!req.file) {
         return res.status(400).send("No file uploaded.");
     }
-    if(!req.body.description){
+    if (!req.body.description) {
         return res.status(400).send("No description provided.");
     }
-    try{
+    try {
         const uint8Array = new Uint8Array(req.file.buffer);
         const blob = new Blob([uint8Array], { type: req.file.mimetype });
         const file = new File([blob], req.file.originalname, { type: req.file.mimetype });
@@ -42,23 +42,23 @@ app.post("/upload", upload.single("file"), async(req, res) => {
         });
         console.log(metaData);
         res.send(metaData.cid);
-    } catch(err){
-        console.log("Error occured",err);
+    } catch (err) {
+        console.log("Error occured", err);
         res.status(500).send("Error uploading file.");
     }
 });
 
-app.get("/fetch/:cid",async(req,res)=>{
+app.get("/fetchJson/:cid", async (req, res) => {
     const cid = req.params.cid;
-    try{
+    try {
         const result = await pinata.gateways.public.get(cid);
         console.log(result);
         res.send(result);
-    } catch(err){
+    } catch (err) {
         res.status(500).send("Error fetching file.");
     }
 });
 
-app.listen(process.env.PORT, async() => {
-  console.log(`Server is running on port ${process.env.PORT}`);
+app.listen(process.env.PORT, async () => {
+    console.log(`Server is running on port ${process.env.PORT}`);
 });
