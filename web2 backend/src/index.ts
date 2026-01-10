@@ -40,7 +40,6 @@ app.post("/upload", upload.single("file"), async (req, res) => {
             description: req.body.description,
             image: `${cid}`,
         });
-        console.log(metaData);
         res.send(metaData.cid);
     } catch (err) {
         console.log("Error occured", err);
@@ -52,7 +51,6 @@ app.get("/fetchJson/:cid", async (req, res) => {
     const cid = req.params.cid;
     try {
         const result = await pinata.gateways.public.get(cid);
-        console.log(result);
         res.send(result);
     } catch (err) {
         res.status(500).send("Error fetching file.");
