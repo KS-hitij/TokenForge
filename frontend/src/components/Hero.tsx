@@ -14,9 +14,9 @@ export default function Hero() {
           <button className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-medium rounded-xl hover:opacity-90 transition-opacity">
             Create Token
           </button>
-          <button className="px-8 py-3 bg-gray-800 text-white font-medium rounded-xl border border-gray-700 hover:border-gray-600 transition-colors">
+          <a href="/dashboard"><button className="px-8 py-3 bg-gray-800 text-white font-medium rounded-xl border border-gray-700 hover:border-gray-600 transition-colors">
             Browse
-          </button>
+          </button></a>
         </div>
       </div>
     </section>

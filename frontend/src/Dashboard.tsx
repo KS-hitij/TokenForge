@@ -1,5 +1,5 @@
 import { useState} from "react"
-import { useReadContract } from "wagmi"
+import { useReadContract,useWriteContract } from "wagmi"
 import TokenCard from "./components/TokenCard"
 import { contractABI, contractAddress } from "./lib/contract"
 
