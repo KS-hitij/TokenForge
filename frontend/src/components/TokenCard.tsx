@@ -78,6 +78,11 @@ export default function TokenCard({ address }: { address: string }) {
         }
     }
 
+    const copyAddress = async()=>{
+        await navigator.clipboard.writeText(address);
+        alert("Address copied to clipboard");
+    }
+
     useEffect(() => {
         if (!data?.metaDataURI) return;
 
@@ -105,7 +110,8 @@ export default function TokenCard({ address }: { address: string }) {
             <AnimatePresence>
                 <motion.div className="absolute w-full h-full bg-black/65 flex justify-center items-center top-0 left-0 z-50" >
                     <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.15, ease: "easeInOut" }} className="bg-gray-800 relative rounded-lg p-8 w-[5/12] h-[69%] md:h-[55%] flex items-center justify-center flex-wrap">
-                        <button onClick={() => { setIsBuying(false); setBuyingAmount("0"); setIsSelling(false); setSellingAmount("0"); setIsSelected(!isSelected) }} className="absolute top-2 right-2 text-white bg-red-700 rounded-full w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors">X</button>
+                        <button onClick={() => { setIsBuying(false); setBuyingAmount("0"); setIsSelling(false); setSellingAmount("0"); setIsSelected(false) }} className="absolute top-2 right-2 text-white bg-red-700 rounded-full w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors">X</button>
+                        <button type="button" onClick={copyAddress} className="absolute left-2 top-2 bg-gray-600 rounded-2xl p-2 cursor-pointer hover:bg-gray-900 active:translate-y-0.5">Address</button>
                         <img className="md:w-80 md:h-80 h-40 w-40 object-cover" src={metaData?.image ? `https://gateway.pinata.cloud/ipfs/${metaData.image}` : ""} alt="Coin Image" />
                         <div className="ml-4 flex flex-col items-center">
                             <h2 className="text-white font-bold text-3xl mb-4">
