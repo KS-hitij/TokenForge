@@ -183,7 +183,7 @@ contract TokenFactory is ReentrancyGuard, Ownable{
             uint128(tokenAmount),
             tokenAmount,
             ethAmount,
-            msg.sender,
+            address(0),
             ""
         );
         mintParams[1] = abi.encode(Currency.wrap(currency0), Currency.wrap(currency1));
