@@ -1,13 +1,16 @@
 import { useReadContract, useWriteContract, usePublicClient } from "wagmi";
 import { contractABI, contractAddress } from "../lib/contract";
+import Loader from "./Loader";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { formatEther, parseEther } from "viem";
 import { motion, AnimatePresence } from "motion/react";
+import { erc20Abi } from "viem";
+
 
 
 export default function TokenCard({ address }: { address: string }) {
-    const { data } = useReadContract({
+    const { data,refetch } = useReadContract({
         address: contractAddress as `0x${string}`,
         abi: contractABI,
         functionName: "getTokenDetails",
@@ -26,6 +29,8 @@ export default function TokenCard({ address }: { address: string }) {
     const [isSelling, setIsSelling] = useState(false);
     const [buyingAmount, setBuyingAmount] = useState("0");
     const [sellingAmount, setSellingAmount] = useState("0");
+    const [isLoading,setIsLoading] = useState(false);
+    const [loaderMsg,setLoaderMsg] = useState("");
     const writeContract = useWriteContract();
     const publicClient = usePublicClient();
 
@@ -53,28 +58,46 @@ export default function TokenCard({ address }: { address: string }) {
                     args: [address, parseEther(buyingAmount)],
                     value: BigInt(buyingCost.data)
                 })
+                setLoaderMsg("Buying Token");
+                setIsLoading(true);
                 await publicClient?.waitForTransactionReceipt({ hash: tx });
+                setIsLoading(false);
                 alert("Token bought");
+                await refetch();
+                await price.refetch();
             } catch (err) {
+                setIsLoading(false);
                 alert("Error Encountered");
                 console.log(err);
             }
         } else if (isSelling) {
             try {
-                const tx = await writeContract.writeContractAsync({
+                setLoaderMsg("User Approving");
+                setIsLoading(true);
+                let tx = await writeContract.writeContractAsync({
+                    address:address as `0x${string}`,
+                    abi:erc20Abi,
+                    functionName:"approve",
+                    args:[contractAddress as `0x${string}`,parseEther(sellingAmount)]
+                });
+                await publicClient?.waitForTransactionReceipt({ hash: tx });
+                tx = await writeContract.writeContractAsync({
                     address: contractAddress as `0x${string}`,
                     abi: contractABI,
                     functionName: "sellMemeToken",
-                    args: [address, parseEther(sellingAmount)],
-                    value: BigInt(sellingPrice.data)
+                    args: [address, parseEther(sellingAmount)]
                 })
+                setLoaderMsg("Selling Token");
                 await publicClient?.waitForTransactionReceipt({ hash: tx });
+                setIsLoading(false);
                 alert("Token Sold");
+                await refetch();
+                await price.refetch();
             } catch (err) {
+                setIsLoading(false);
                 alert("Error Encountered");
                 console.log(err);
             }
-
         }
     }
 
@@ -108,6 +131,8 @@ export default function TokenCard({ address }: { address: string }) {
     if (isSelected) {
         return (
             <AnimatePresence>
+                {isLoading && 
+                <Loader message={loaderMsg} />}
                 <motion.div className="absolute w-full h-full bg-black/65 flex justify-center items-center top-0 left-0 z-50" >
                     <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.15, ease: "easeInOut" }} className="bg-gray-800 relative rounded-lg p-8 w-[5/12] h-[69%] md:h-[55%] flex items-center justify-center flex-wrap">
                         <button onClick={() => { setIsBuying(false); setBuyingAmount("0"); setIsSelling(false); setSellingAmount("0"); setIsSelected(false) }} className="absolute top-2 right-2 text-white bg-red-700 rounded-full w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors">X</button>
