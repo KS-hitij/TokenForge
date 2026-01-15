@@ -38,13 +38,13 @@ contract TokenFactory is ReentrancyGuard, Ownable{
     address constant WETH = 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9;
 
     mapping(address => memeToken) addressToMemeToken;
+    mapping(address => address[]) creatorToMemeToken;
     address[] memeTokenAddressArray;
 
-    event TokenCreated(address indexed tokenAddress);
+    event TokenCreated(address indexed tokenAddress, address indexed creator);
     event TokenBought(address indexed tokenAddress, uint amount);
     event TokenSold(address indexed tokenAddress,uint amount);
     event TokenGraduated(address indexed tokenAddress);
-
 
     error INVALID_TOKEN_FEE();
     error TOKEN_NOT_LISTED();
@@ -99,7 +99,8 @@ contract TokenFactory is ReentrancyGuard, Ownable{
         address memeTokenAddress = address(memeTokenContract);
         addressToMemeToken[memeTokenAddress] = memeToken(_name,_symbol,_tokenMetaData,memeTokenAddress,msg.sender,MAX_SUPPLY,6*10**18,false);
         memeTokenAddressArray.push(memeTokenAddress);
-        emit TokenCreated(memeTokenAddress);
+        creatorToMemeToken[msg.sender].push(memeTokenAddress);
+        emit TokenCreated(memeTokenAddress,msg.sender);
     }
 
     function buyMemeToken(address _address,uint purchaseQty) external payable{
@@ -242,6 +243,18 @@ contract TokenFactory is ReentrancyGuard, Ownable{
         }
         for(uint i = 0; i<10 && i+offset<memeTokenAddressArray.length;i++){
             result[i] = memeTokenAddressArray[i+offset];
+        }
+        return result;
+    }
+
+    function getTokensByCreator(uint offset) public view returns(address[] memory){
+        address[] memory result = new address[](10);
+        address[] storage tokens = creatorToMemeToken[msg.sender];
+        if(offset>= tokens.length){
+            revert OFFSET_TOO_HIGH();
+        }
+        for (uint i = 0;i<10 && i+offset<tokens.length;i++){
+            result[i] = tokens[i+offset];
         }
         return result;
     }
