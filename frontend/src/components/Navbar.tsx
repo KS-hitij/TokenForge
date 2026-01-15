@@ -8,7 +8,7 @@ export default function Navbar() {
           <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">T</span>
           </div>
-          <span className="text-xl font-bold text-white cursor-pointer">TokenForge</span>
+          <a href="/"><span className="text-xl font-bold text-white cursor-pointer">TokenForge</span></a>
         </div>
         <div className="flex items-center gap-4">
           <ConnectButton showBalance={true} />
