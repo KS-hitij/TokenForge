@@ -4,6 +4,7 @@ import { useWriteContract,usePublicClient } from "wagmi"
 import { contractAddress,contractABI } from "./lib/contract"
 import { parseEther } from "viem"
 import { makeImageSquare } from "./lib/helper"
+import Loader from "./components/Loader"
 export default function Create() {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [description, setDescription] = useState<string>("");
@@ -11,6 +12,8 @@ export default function Create() {
     const [symbol, setSymbol] = useState<string>("");
     const writeContract  = useWriteContract();
     const publicClient = usePublicClient();
+    const [isLoading,setIsLoading] = useState(false);
+    const [loaderMsg,setLoaderMsg] = useState("");
 
     const uploadMetaData = async () => {
         if(!imageFile){
@@ -21,6 +24,8 @@ export default function Create() {
             alert("Please enter token name and symbol");
             return;
         }
+        setLoaderMsg("Uploading Meta Data");
+        setIsLoading(true);
         const formData = new FormData();
         const squareImageFile = await makeImageSquare(imageFile);
         formData.append('file', squareImageFile);
@@ -32,6 +37,7 @@ export default function Create() {
         })
         .then(async response => {
             alert("Metadata uploaded successfully. Creating token...");
+            setLoaderMsg("Creating Token");
             const tx = await writeContract.writeContractAsync({
                 address:contractAddress as `0x${string}`,
                 abi:contractABI,
@@ -40,6 +46,7 @@ export default function Create() {
                 value:parseEther("0.001"),
             })
             await publicClient?.waitForTransactionReceipt({ hash: tx });
+            setIsLoading(false);
             alert("Token created successfully!");
             setDescription("");
             setName("");
@@ -47,6 +54,7 @@ export default function Create() {
             setImageFile(null);
         })
         .catch(error => {
+            setIsLoading(false);
             alert("Error Creating Token. Please try again.");
             console.error('There was an error uploading the file!', error);
         });
@@ -55,6 +63,7 @@ export default function Create() {
     return (
         <>
             <div className="px-4 pt-25 pb-16 h-full w-full flex gap-5 justify-center text-center">
+                {isLoading && <Loader message={loaderMsg}/>}
                 <div>
                     <h1 className="text-white font-bold text-center text-3xl ">Create a New Token</h1>
                     <div className="mt-8 max-w-lg flex flex-col  items-center">
