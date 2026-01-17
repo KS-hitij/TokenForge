@@ -130,7 +130,7 @@ export default function TokenCard({ address }: { address: string }) {
                 setLoadingMeta(true);
 
                 const res = await axios.get(
-                    `http://localhost:5000/fetchJson/${data.metaDataURI}`
+                    `https://tokenforge-web2-backend.onrender.com/fetchJson/${data.metaDataURI}`
                 );
 
                 setMetaData(res.data.data);

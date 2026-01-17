@@ -40,7 +40,7 @@ export default function Create() {
         const squareImageFile = await makeImageSquare(imageFile);
         formData.append('file', squareImageFile);
         formData.append('description', description);
-        axios.post('http://localhost:5000/upload', formData, {
+        axios.post('https://tokenforge-web2-backend.onrender.com/upload', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
