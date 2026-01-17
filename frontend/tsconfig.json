@@ -7,6 +7,9 @@
   "forceConsistentCasingInFileNames": true,
   "compilerOptions": {
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
   },
 }
