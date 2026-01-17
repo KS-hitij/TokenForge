@@ -1,5 +1,5 @@
 import { useState} from "react"
-import { useReadContract,useWriteContract } from "wagmi"
+import { useReadContract } from "wagmi"
 import TokenCard from "./components/TokenCard"
 import { contractABI, contractAddress } from "./lib/contract"
 
@@ -13,7 +13,7 @@ function Dashboard() {
         functionName:"getTokensAddress",
         args:[offset]
     })
-    const ZERO_ADDRESS="0x0000000000000000000000000000000000000000"
+    const ZERO_ADDRESS="0x0000000000000000000000000000000000000000";
 
     return (
         <>

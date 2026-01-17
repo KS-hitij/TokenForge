@@ -6,11 +6,10 @@ import { useEffect, useState } from "react";
 import { formatEther, parseEther } from "viem";
 import { motion, AnimatePresence } from "motion/react";
 import { erc20Abi } from "viem";
-
-
+import Alert from "./Alert";
 
 export default function TokenCard({ address }: { address: string }) {
-    const { data,refetch } = useReadContract({
+    const { data, refetch } = useReadContract({
         address: contractAddress as `0x${string}`,
         abi: contractABI,
         functionName: "getTokenDetails",
@@ -29,11 +28,13 @@ export default function TokenCard({ address }: { address: string }) {
     const [isSelling, setIsSelling] = useState(false);
     const [buyingAmount, setBuyingAmount] = useState("0");
     const [sellingAmount, setSellingAmount] = useState("0");
-    const [isLoading,setIsLoading] = useState(false);
-    const [loaderMsg,setLoaderMsg] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const [loaderMsg, setLoaderMsg] = useState("");
     const writeContract = useWriteContract();
     const publicClient = usePublicClient();
-
+    const [alert, setAlert] = useState(false);
+    const [alertMsg, setAlertMsg] = useState("");
+    const [alertType, setAlertType] = useState<"error" | "success" | "warning">("success");
 
     const buyingCost = useReadContract({
         address: contractAddress as `0x${string}`,
@@ -62,12 +63,18 @@ export default function TokenCard({ address }: { address: string }) {
                 setIsLoading(true);
                 await publicClient?.waitForTransactionReceipt({ hash: tx });
                 setIsLoading(false);
-                alert("Token bought");
+                setAlertType("success");
+                setAlertMsg("Token bought");
+                setAlert(true);
+                setTimeout(() => { setAlert(false) }, 3000);
                 await refetch();
                 await price.refetch();
             } catch (err) {
                 setIsLoading(false);
-                alert("Error Encountered");
+                setAlertType("error");
+                setAlertMsg("Failed to buy token");
+                setAlert(true);
+                setTimeout(() => { setAlert(false) }, 3000);
                 console.log(err);
             }
         } else if (isSelling) {
@@ -75,10 +82,10 @@ export default function TokenCard({ address }: { address: string }) {
                 setLoaderMsg("User Approving");
                 setIsLoading(true);
                 let tx = await writeContract.writeContractAsync({
-                    address:address as `0x${string}`,
-                    abi:erc20Abi,
-                    functionName:"approve",
-                    args:[contractAddress as `0x${string}`,parseEther(sellingAmount)]
+                    address: address as `0x${string}`,
+                    abi: erc20Abi,
+                    functionName: "approve",
+                    args: [contractAddress as `0x${string}`, parseEther(sellingAmount)]
                 });
                 await publicClient?.waitForTransactionReceipt({ hash: tx });
                 tx = await writeContract.writeContractAsync({
@@ -90,20 +97,29 @@ export default function TokenCard({ address }: { address: string }) {
                 setLoaderMsg("Selling Token");
                 await publicClient?.waitForTransactionReceipt({ hash: tx });
                 setIsLoading(false);
-                alert("Token Sold");
+                setAlertType("success");
+                setAlertMsg("Token sold");
+                setAlert(true);
+                setTimeout(() => { setAlert(false) }, 3000);
                 await refetch();
                 await price.refetch();
             } catch (err) {
                 setIsLoading(false);
-                alert("Error Encountered");
+                setAlertType("error");
+                setAlertMsg("Failed to sell token");
+                setAlert(true);
+                setTimeout(() => { setAlert(false) }, 3000);
                 console.log(err);
             }
         }
     }
 
-    const copyAddress = async()=>{
+    const copyAddress = async () => {
         await navigator.clipboard.writeText(address);
-        alert("Address copied to clipboard");
+        setAlertType("success");
+        setAlertMsg("Address copied to clipboard");
+        setAlert(true);
+        setTimeout(() => { setAlert(false) }, 3000);
     }
 
     useEffect(() => {
@@ -131,9 +147,10 @@ export default function TokenCard({ address }: { address: string }) {
     if (isSelected) {
         return (
             <AnimatePresence>
-                {isLoading && 
-                <Loader message={loaderMsg} />}
                 <motion.div className="absolute w-full h-full bg-black/65 flex justify-center items-center top-0 left-0 z-50" >
+                {isLoading &&
+                    <Loader message={loaderMsg} />}
+                    {alert && <Alert message={alertMsg} type={alertType} />}
                     <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.15, ease: "easeInOut" }} className="bg-gray-800 relative rounded-lg p-8 w-[5/12] h-[69%] md:h-[55%] flex items-center justify-center flex-wrap">
                         <button onClick={() => { setIsBuying(false); setBuyingAmount("0"); setIsSelling(false); setSellingAmount("0"); setIsSelected(false) }} className="absolute top-2 right-2 text-white bg-red-700 rounded-full w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors">X</button>
                         <button type="button" onClick={copyAddress} className="absolute left-2 top-2 bg-gray-600 rounded-2xl p-2 cursor-pointer hover:bg-gray-900 active:translate-y-0.5">Address</button>
@@ -147,19 +164,10 @@ export default function TokenCard({ address }: { address: string }) {
                                     ? "Loading description..."
                                     : metaData?.description ?? "No Description Available"}
                             </p>
-                            <p className="text-white text-xl mb-2">
-                                {price.data
-                                    ? `Market Cap: ${((Number(formatEther(data.tokenReserve)) - 200000) * Number(formatEther(price.data))).toFixed(6)} ETH`
-                                    : "Loading..."}
-                            </p>
-                            <p className="text-white text-xl">
-                                {price.data
-                                    ? `Liquidity: ${Number(Number(formatEther(data.ethReserve)).toFixed(6) - 6).toFixed(6)} ETH`
-                                    : "Loading..."}
-                            </p>
+                            <p className="text-white text-xl">{`Funding Raised: ${Number(Number(formatEther(data.ethReserve)).toFixed(6) - 6).toFixed(6)} ETH`}</p>
                             <div className="flex gap-3 mb-3">
-                                <button onClick={() => { setIsSelling(false); setIsBuying(true) }} className="bg-green-600 text-white px-4 py-2 rounded-lg mt-4 cursor-pointer hover:bg-green-700 transition-colors">Buy</button>
-                                <button onClick={() => { setIsBuying(false); setIsSelling(true) }} className="bg-red-600 text-white px-4 py-2 rounded-lg mt-4 cursor-pointer hover:bg-red-700 transition-colors">Sell</button>
+                                <button type="button" onClick={() => { setIsSelling(false); setIsBuying(true) }} className="bg-green-600 text-white px-4 py-2 rounded-lg mt-4 cursor-pointer hover:bg-green-700 transition-colors">Buy</button>
+                                <button type="button" onClick={() => { setIsBuying(false); setIsSelling(true) }} className="bg-red-600 text-white px-4 py-2 rounded-lg mt-4 cursor-pointer hover:bg-red-700 transition-colors">Sell</button>
                             </div>
                             {isBuying &&
                                 <>
@@ -196,7 +204,7 @@ export default function TokenCard({ address }: { address: string }) {
 
     return (
         <AnimatePresence>
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ ease: "easeInOut", delay: 0.4 }} onClick={() => setIsSelected(!isSelected)} className="bg-gray-800 flex rounded-lg w-108 p-6 items-center cursor-pointer hover:shadow-lg hover:shadow-500/50 transition-shadow">
+            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ ease: "easeInOut", delay: 0.4 }} onClick={() => setIsSelected(!isSelected)} className="bg-gray-800 flex rounded-lg w-116 p-6 items-center cursor-pointer hover:shadow-lg hover:shadow-500/50 transition-shadow">
                 <img
                     className="w-24 h-24  mb-4 object-cover" loading="lazy"
                     src={
@@ -207,28 +215,16 @@ export default function TokenCard({ address }: { address: string }) {
                     alt="Coin Image"
                 />
 
-                <div className="ml-4 flex flex-col items-center">
+                <div className="ml-6 flex flex-col items-center">
                     <h2 className="text-white font-bold text-xl mb-2">
                         {data?.name ? `${data?.name} (${data?.symbol})` : "Loading..."}
                     </h2>
-
                     <p className="text-gray-400 text-center text-sm mb-1">
                         {loadingMeta
                             ? "Loading description..."
                             : metaData?.description ?? "No Description Available"}
                     </p>
-
-                    <p className="text-white">
-                        {price.data
-                            ? `Market Cap: ${((Number(formatEther(data.tokenReserve)) - 200000) * Number(formatEther(price.data))).toFixed(6)} ETH`
-                            : "Loading..."}
-                    </p>
-
-                    <p className="text-white">
-                        {price.data
-                            ? `Liquidity: ${Number(Number(formatEther(data.ethReserve)).toFixed(6) - 6).toFixed(6)} ETH`
-                            : "Loading..."}
-                    </p>
+                    <p className="text-white text-xl">{data ? `Funding Raised: ${Number(Number(formatEther(data.ethReserve)).toFixed(6) - 6).toFixed(6)} ETH` : "Loading"}</p>
                 </div>
             </motion.div>
         </AnimatePresence>

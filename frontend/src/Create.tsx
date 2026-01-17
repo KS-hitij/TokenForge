@@ -1,27 +1,37 @@
-import { useState } from "react"
-import axios from "axios"
-import { useWriteContract,usePublicClient } from "wagmi"
-import { contractAddress,contractABI } from "./lib/contract"
-import { parseEther } from "viem"
-import { makeImageSquare } from "./lib/helper"
-import Loader from "./components/Loader"
+import { useState } from "react";
+import axios from "axios";
+import { useWriteContract, usePublicClient } from "wagmi";
+import { contractAddress, contractABI } from "./lib/contract";
+import { parseEther } from "viem";
+import { makeImageSquare } from "./lib/helper";
+import Loader from "./components/Loader";
+import Alert from "./components/Alert";
 export default function Create() {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [description, setDescription] = useState<string>("");
     const [name, setName] = useState<string>("");
     const [symbol, setSymbol] = useState<string>("");
-    const writeContract  = useWriteContract();
+    const writeContract = useWriteContract();
     const publicClient = usePublicClient();
-    const [isLoading,setIsLoading] = useState(false);
-    const [loaderMsg,setLoaderMsg] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const [loaderMsg, setLoaderMsg] = useState("");
+    const [alert, setAlert] = useState(false);
+    const [alertMsg, setAlertMsg] = useState("");
+    const [alertType, setAlertType] = useState<"error" | "success" | "warning">("success");
 
     const uploadMetaData = async () => {
-        if(!imageFile){
-            alert("Please select an image file");
+        if (!imageFile) {
+            setAlertType("warning");
+            setAlertMsg("Please upload image");
+            setAlert(true);
+            setTimeout(() => { setAlert(false) }, 3000);
             return;
         }
-        if(!name || !symbol || name.trim() === "" || symbol.trim() === ""){
-            alert("Please enter token name and symbol");
+        if (!name || !symbol || name.trim() === "" || symbol.trim() === "") {
+            setAlertType("warning");
+            setAlertMsg("Enter Token name and symbol");
+            setAlert(true);
+            setTimeout(() => { setAlert(false) }, 3000);
             return;
         }
         setLoaderMsg("Uploading Meta Data");
@@ -35,35 +45,45 @@ export default function Create() {
                 'Content-Type': 'multipart/form-data'
             }
         })
-        .then(async response => {
-            alert("Metadata uploaded successfully. Creating token...");
-            setLoaderMsg("Creating Token");
-            const tx = await writeContract.writeContractAsync({
-                address:contractAddress as `0x${string}`,
-                abi:contractABI,
-                functionName:"createMemeToken",
-                args:[name,symbol,response.data],
-                value:parseEther("0.001"),
+            .then(async response => {
+                setAlertType("success");
+                setAlertMsg("Metadata uploaded, creating token");
+                setAlert(true);
+                setTimeout(() => { setAlert(false) }, 3000);
+                setLoaderMsg("Creating Token");
+                const tx = await writeContract.writeContractAsync({
+                    address: contractAddress as `0x${string}`,
+                    abi: contractABI,
+                    functionName: "createMemeToken",
+                    args: [name, symbol, response.data],
+                    value: parseEther("0.001"),
+                })
+                await publicClient?.waitForTransactionReceipt({ hash: tx });
+                setIsLoading(false);
+                setAlertType("success");
+                setAlertMsg("Token created successfully");
+                setAlert(true);
+                setTimeout(() => { setAlert(false) }, 3000);
+                setDescription("");
+                setName("");
+                setSymbol("");
+                setImageFile(null);
             })
-            await publicClient?.waitForTransactionReceipt({ hash: tx });
-            setIsLoading(false);
-            alert("Token created successfully!");
-            setDescription("");
-            setName("");
-            setSymbol("");
-            setImageFile(null);
-        })
-        .catch(error => {
-            setIsLoading(false);
-            alert("Error Creating Token. Please try again.");
-            console.error('There was an error uploading the file!', error);
-        });
+            .catch(error => {
+                setIsLoading(false);
+                setAlertType("error");
+                setAlertMsg("Error Creating Token. Please try again.");
+                setAlert(true);
+                setTimeout(() => { setAlert(false) }, 3000);
+                console.error('There was an error uploading the file!', error);
+            });
     }
-        
+
     return (
         <>
             <div className="px-4 pt-25 pb-16 h-full w-full flex gap-5 justify-center text-center">
-                {isLoading && <Loader message={loaderMsg}/>}
+                {isLoading && <Loader message={loaderMsg} />}
+                {alert && <Alert message={alertMsg} type={alertType} />}
                 <div>
                     <h1 className="text-white font-bold text-center text-3xl ">Create a New Token</h1>
                     <div className="mt-8 max-w-lg flex flex-col  items-center">

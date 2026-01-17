@@ -1,4 +1,3 @@
-import contract from "./contract.json" assert { type: "json" }
-import { erc20Abi } from "viem";
+import contract from "./contract.json" assert { type: "json" };
 export const contractABI = contract.abi;
 export const contractAddress = contract.contractAddress;

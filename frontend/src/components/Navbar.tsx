@@ -12,6 +12,9 @@ export default function Navbar() {
         </div>
         <div className="flex items-center gap-4">
           <ConnectButton showBalance={true} />
+          <a href="mycoins"><button type='button' className="px-8 py-3 bg-gray-800 text-white font-medium rounded-xl border border-gray-700 hover:border-gray-600 transition-colors">
+            My Coins</button>
+          </a>
         </div>
       </div>
     </nav>

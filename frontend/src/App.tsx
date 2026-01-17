@@ -5,6 +5,7 @@ import Home from './Home'
 import { Route, Routes } from 'react-router-dom'
 import './App.css'
 import Create from './Create'
+import MyCoins from './MyCoins'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/create" element={<Create />} />
+        <Route path="/mycoins" element={<MyCoins />} />
       </Routes>
       <Footer />
     </div>
