@@ -9,7 +9,7 @@ import { PinataSDK } from "pinata";
 dotenv.config();
 const app = express();
 app.use(cors({
-    origin: "https://tokenforge-hazel.vercel.app/",
+    origin: "https://tokenforge-hazel.vercel.app",
 }))
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
