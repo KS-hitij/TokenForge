@@ -8,20 +8,36 @@ import { motion, AnimatePresence } from "motion/react";
 import { erc20Abi } from "viem";
 import Alert from "./Alert";
 
+interface ITokenDetails {
+    name: string,
+    metaDataURI: string,
+    symbol:string,
+    tokenAddress: `0x${string}`,
+    creatorAddress: `0x${string}`,
+    hasGraduated: boolean,
+    ethReserve: bigint,
+    tokenReserve: bigint
+}
+
+interface IMetaData{
+    image:string,
+    description:string
+}
+
 export default function TokenCard({ address }: { address: string }) {
     const { data, refetch } = useReadContract({
         address: contractAddress as `0x${string}`,
         abi: contractABI,
         functionName: "getTokenDetails",
         args: [address],
-    });
+    }) as { data?:ITokenDetails;refetch?: () => void;};
     const price = useReadContract({
         address: contractAddress as `0x${string}`,
         abi: contractABI,
         functionName: "calculateBuyingCost",
         args: [parseEther("1"), address],
     })
-    const [metaData, setMetaData] = useState<any>(null);
+    const [metaData, setMetaData] = useState<IMetaData | null>(null);
     const [loadingMeta, setLoadingMeta] = useState(false);
     const [isSelected, setIsSelected] = useState(false);
     const [isBuying, setIsBuying] = useState(false);
@@ -36,28 +52,29 @@ export default function TokenCard({ address }: { address: string }) {
     const [alertMsg, setAlertMsg] = useState("");
     const [alertType, setAlertType] = useState<"error" | "success" | "warning">("success");
 
-    const buyingCost = useReadContract({
+    const { data: buyingCost } = useReadContract({
         address: contractAddress as `0x${string}`,
         abi: contractABI,
         functionName: "calculateBuyingCost",
         args: [parseEther(buyingAmount), address],
-    })
-    const sellingPrice = useReadContract({
+    }) as { data?: bigint };
+
+    const { data: sellingPrice } = useReadContract({
         address: contractAddress as `0x${string}`,
         abi: contractABI,
         functionName: "calculateSellingPrice",
         args: [parseEther(sellingAmount), address],
-    })
+    }) as { data?: bigint };
 
     const confirm = async () => {
-        if (isBuying) {
+        if (isBuying && buyingCost) {
             try {
                 const tx = await writeContract.writeContractAsync({
                     address: contractAddress as `0x${string}`,
                     abi: contractABI,
                     functionName: "buyMemeToken",
                     args: [address, parseEther(buyingAmount)],
-                    value: BigInt(buyingCost.data)
+                    value: BigInt(buyingCost)
                 })
                 setLoaderMsg("Buying Token");
                 setIsLoading(true);
@@ -67,7 +84,7 @@ export default function TokenCard({ address }: { address: string }) {
                 setAlertMsg("Token bought");
                 setAlert(true);
                 setTimeout(() => { setAlert(false) }, 3000);
-                await refetch();
+                refetch?.();
                 await price.refetch();
             } catch (err) {
                 setIsLoading(false);
@@ -101,7 +118,7 @@ export default function TokenCard({ address }: { address: string }) {
                 setAlertMsg("Token sold");
                 setAlert(true);
                 setTimeout(() => { setAlert(false) }, 3000);
-                await refetch();
+                refetch?.();
                 await price.refetch();
             } catch (err) {
                 setIsLoading(false);
@@ -148,8 +165,8 @@ export default function TokenCard({ address }: { address: string }) {
         return (
             <AnimatePresence>
                 <motion.div className="absolute w-full h-full bg-black/65 flex justify-center items-center top-0 left-0 z-50" >
-                {isLoading &&
-                    <Loader message={loaderMsg} />}
+                    {isLoading &&
+                        <Loader message={loaderMsg} />}
                     {alert && <Alert message={alertMsg} type={alertType} />}
                     <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.15, ease: "easeInOut" }} className="bg-gray-800 relative rounded-lg p-8 w-[5/12] h-[69%] md:h-[55%] flex items-center justify-center flex-wrap">
                         <button onClick={() => { setIsBuying(false); setBuyingAmount("0"); setIsSelling(false); setSellingAmount("0"); setIsSelected(false) }} className="absolute top-2 right-2 text-white bg-red-700 rounded-full w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors">X</button>
@@ -164,7 +181,7 @@ export default function TokenCard({ address }: { address: string }) {
                                     ? "Loading description..."
                                     : metaData?.description ?? "No Description Available"}
                             </p>
-                            <p className="text-white text-xl">{`Funding Raised: ${Number(Number(formatEther(data.ethReserve)).toFixed(6) - 6).toFixed(6)} ETH`}</p>
+                             {data?.ethReserve? <p className="text-white text-xl">{`Funding Raised: ${Number(Number(formatEther(data.ethReserve)) - 6).toFixed(6)} ETH`}</p>:null}       
                             <div className="flex gap-3 mb-3">
                                 <button type="button" onClick={() => { setIsSelling(false); setIsBuying(true) }} className="bg-green-600 text-white px-4 py-2 rounded-lg mt-4 cursor-pointer hover:bg-green-700 transition-colors">Buy</button>
                                 <button type="button" onClick={() => { setIsBuying(false); setIsSelling(true) }} className="bg-red-600 text-white px-4 py-2 rounded-lg mt-4 cursor-pointer hover:bg-red-700 transition-colors">Sell</button>
@@ -172,9 +189,9 @@ export default function TokenCard({ address }: { address: string }) {
                             {isBuying &&
                                 <>
                                     <input type="text" onChange={(e) => { setBuyingAmount(!isNaN(Number(e.target.value)) ? e.target.value : "0") }} className="mb-4 mt-4 bg-gray-500 rounded-2xl p-2 " placeholder="Buying Amount" />
-                                    {buyingCost.data != undefined ? (
+                                    {buyingCost != undefined ? (
                                         <p className="text-white text-xl">
-                                            {Number(formatEther(buyingCost.data)).toFixed(6)} ETH
+                                            {Number(formatEther(buyingCost)).toFixed(6)} ETH
                                         </p>
                                     ) : (
                                         <p className="text-gray-400 text-xl">Calculating...</p>
@@ -185,9 +202,9 @@ export default function TokenCard({ address }: { address: string }) {
                             {isSelling &&
                                 <>
                                     <input type="text" onChange={(e) => { setSellingAmount(!isNaN(Number(e.target.value)) ? e.target.value : "0") }} className="mb-4 mt-4 bg-gray-500 rounded-2xl p-2 " placeholder="Selling Amount" />
-                                    {sellingPrice.data != undefined ? (
+                                    {sellingPrice != undefined ? (
                                         <p className="text-white text-xl">
-                                            {Number(formatEther(sellingPrice.data)).toFixed(6)} ETH
+                                            {Number(formatEther(sellingPrice)).toFixed(6)} ETH
                                         </p>
                                     ) : (
                                         <p className="text-gray-400 text-xl">Calculating...</p>
@@ -224,7 +241,7 @@ export default function TokenCard({ address }: { address: string }) {
                             ? "Loading description..."
                             : metaData?.description ?? "No Description Available"}
                     </p>
-                    <p className="text-white text-xl">{data ? `Funding Raised: ${Number(Number(formatEther(data.ethReserve)).toFixed(6) - 6).toFixed(6)} ETH` : "Loading"}</p>
+                    <p className="text-white text-xl">{data ? `Funding Raised: ${Number(Number(formatEther(data.ethReserve)) - 6).toFixed(6)} ETH` : "Loading"}</p>
                 </div>
             </motion.div>
         </AnimatePresence>

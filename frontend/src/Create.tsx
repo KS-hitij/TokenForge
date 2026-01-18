@@ -103,7 +103,7 @@ export default function Create() {
                                 </div>
                                 <div>
                                     <label htmlFor="image" className="block text-white mb-2">Upload Token Image <span className="text-gray-400"> (1:1 ratio preferred)</span></label>
-                                    <input id="image" type="file" accept="image/*" className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-purple-500" onChange={(e) => setImageFile(e.target.files[0])} />
+                                    <input id="image" type="file" accept="image/*" className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-purple-500" onChange={(e) =>{if(e.target.files) setImageFile(e.target.files[0] || null)}} />
                                     <p className="text-gray-400">Only Jpegs allowed</p>
                                 </div>
                                 <button className="w-full bg-purple-600 hover:bg-purple-700 cursor-pointer text-white font-bold py-3 px-6 rounded-lg transition-colors" role="button" onClick={uploadMetaData} type="button">Create Token</button>
